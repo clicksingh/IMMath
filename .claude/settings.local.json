@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone:*)",
+      "Bash(powershell:*)",
+      "mcp__web-search-prime__web_search_prime",
+      "WebSearch",
+      "mcp__web-reader__webReader",
+      "Bash(docker inspect 52b0e5806473f5b191bc441247e559f39c73a03de44121a22833d5075d075e13 --format '{{json .NetworkSettings.Ports}}')",
+      "WebFetch(domain:github.com)",
+      "Bash(docker port:*)",
+      "Bash(docker:*)",
+      "Bash(findstr:*)",
+      "Bash(dir:*)"
+    ]
+  }
+}

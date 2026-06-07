@@ -1,0 +1,9 @@
+cohort_type,display_name,pv_benefits,pv_tax,pv_transition,pv_costs,pv_housing,pv_health,pv_education,pv_integrity,pv_settlement,niv,transition_probability,time_horizon,discount_rate
+francophone_pr,Francophone Permanent Resident,928247.91,464123.95,464123.95,483962.45,419000.79,64461.66,0.0,500,0.0,444285.46,1.0,35,0.03
+high_wage_worker,High-Wage Temporary/Permanent Worker,851938.25,529359.69,322578.56,439411.32,383089.25,55722.07,0.0,600,0.0,412526.93,0.65,25,0.03
+in_canada_transition,In-Canada Transition (TR to PR),647990.59,306942.91,341047.68,410349.22,352807.94,56841.28,0.0,700,0.0,237641.37,1.0,30,0.03
+high_quality_student,High-Quality International Student,422704.59,316919.29,105785.3,322993.23,252490.64,48756.81,20895.78,850,0.0,99711.36,0.35,25,0.03
+family_class,Family Class Immigrant,372408.39,148963.35,223445.03,506191.39,382208.61,68601.54,54881.24,500,0.0,-133783.0,1.0,30,0.03
+low_wage_worker,Low-Wage Temporary Worker,125374.66,100299.73,25074.93,305930.08,252490.64,52239.44,0.0,1200,0.0,-180555.42,0.15,25,0.03
+low_quality_student,Low-Quality International Student,113137.3,97513.63,15623.68,324343.23,252490.64,48756.81,20895.78,2200,0.0,-211205.93,0.12,25,0.03
+refugee,Government-Assisted / Privately Sponsored Refugee,194044.37,64681.46,129362.91,633934.21,313607.06,82321.85,68601.54,2800,166603.75,-439889.84,1.0,30,0.03

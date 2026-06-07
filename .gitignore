@@ -18,8 +18,12 @@ env/
 *.swp
 *.swo
 
-# Data outputs (regeneratable)
-outputs/
+# Data outputs (regeneratable) — but keep outputs/data/ for deployment
+outputs/charts/
+outputs/notebooks/
+
+# Raw data too large for repo
+data/raw/
 
 # OS
 .DS_Store

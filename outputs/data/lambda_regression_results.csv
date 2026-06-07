@@ -1,0 +1,9 @@
+variable,coefficient,std_error,t_statistic,p_value,ci_lower,ci_upper,significant_10pct,notes
+delta_quebec_leverage,-19273888.146567,20730917.059138,-0.9297,0.352518,-59905738.948965,21357962.65583,False,
+delta_housing_stress,-115699.013947,471921.293059,-0.2452,0.806328,-1040647.751881,809249.723986,False,
+delta_absorptive_capacity,725490.232205,8173012.623442,0.0888,0.929267,-15293320.154933,16744300.619342,False,
+delta_heterogeneity,-4882506.221585,6700952.269249,-0.7286,0.466229,-18016131.331436,8251118.888266,False,
+delta_innovation,-1967700.301673,5698737.979728,-0.3453,0.729879,-13137021.499271,9201620.895926,False,
+delta_fiscal,13.615973,2613.547804,0.0052,0.995843,-5108.843594,5136.07554,False,
+MODEL_R_SQUARED,1.0,,1.4357,,,,,
+THESIS_ASSESSMENT,,,,,,,,INCONCLUSIVE: No dimensions are statistically significant. Insufficient power to test the rank-2 hypothesis.

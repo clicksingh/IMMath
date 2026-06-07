@@ -22,11 +22,12 @@ logger = logging.getLogger(__name__)
 DEFAULT_PORT = 8050
 
 
-def create_app(base_dir: Path) -> Dash:
+def create_app(base_dir: Path, url_base_pathname: str | None = None) -> Dash:
     """Create and configure the Dash application.
 
     Args:
         base_dir: Project root directory.
+        url_base_pathname: Base path when mounted behind a proxy (e.g. "/dash/").
 
     Returns:
         Configured Dash app.
@@ -41,11 +42,14 @@ def create_app(base_dir: Path) -> Dash:
     years = sorted(master_panel["year"].unique())
 
     # Create app
-    app = Dash(
-        __name__,
-        external_stylesheets=[dbc.themes.BOOTSTRAP],
-        title="ACI Research Tool",
-    )
+    dash_kwargs = {
+        "external_stylesheets": [dbc.themes.BOOTSTRAP],
+        "title": "ACI Research Tool",
+    }
+    if url_base_pathname:
+        dash_kwargs["url_base_pathname"] = url_base_pathname
+
+    app = Dash(__name__, **dash_kwargs)
 
     app.layout = dbc.Container([
         html.H1(

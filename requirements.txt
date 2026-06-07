@@ -19,3 +19,4 @@ uvicorn[standard]>=0.27.0
 slowapi>=0.1.9
 httpx>=0.26.0
 dash-bootstrap-components>=2.0.0
+a2wsgi>=1.10.0

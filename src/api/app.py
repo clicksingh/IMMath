@@ -11,10 +11,10 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 
+from a2wsgi import WSGIMiddleware
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse, Response
-from starlette.middleware.wsgi import WSGIMiddleware
+from fastapi.responses import RedirectResponse
 from strawberry.fastapi import GraphQLRouter
 
 from .errors import graphql_error_formatter
@@ -28,27 +28,22 @@ DEFAULT_PORT = 8050
 DASH_PREFIX = "/dash"
 
 
-class _PreservePathWSGI(WSGIMiddleware):
-    """WSGIMiddleware subclass that preserves the original path prefix.
+class _ClearRootPath:
+    """ASGI middleware that clears root_path for WSGI compatibility.
 
-    FastAPI's app.mount() strips the mount prefix before passing to the
-    sub-app. But Dash with url_base_pathname needs to see the full path
-    so it can generate correct asset URLs. This subclass overrides the
-    scope to restore the original path.
+    Starlette 0.45+ no longer strips scope["path"] in Mount — it only
+    adds the matched prefix to scope["root_path"].  WSGI middleware
+    converts root_path to SCRIPT_NAME, which confuses Flask's routing.
+    Clear root_path so PATH_INFO alone drives Flask's URL matching.
     """
 
-    def __init__(self, app, prefix: str):
-        super().__init__(app)
-        self._prefix = prefix
+    def __init__(self, asgi_app):
+        self._asgi_app = asgi_app
 
     async def __call__(self, scope, receive, send):
         if scope["type"] == "http":
-            # Restore the original path that mount() stripped
-            orig_path = scope.get("root_path", "") + scope.get("path", "")
-            scope["path"] = orig_path
             scope["root_path"] = ""
-            scope["raw_path"] = orig_path.encode()
-        await super().__call__(scope, receive, send)
+        await self._asgi_app(scope, receive, send)
 
 
 def create_api(base_dir: Path, debug: bool = False) -> FastAPI:
@@ -100,7 +95,8 @@ def create_api(base_dir: Path, debug: bool = False) -> FastAPI:
         from src.viz.dashboard import create_app as create_dash_app
 
         dash_app = create_dash_app(base_dir, url_base_pathname="/dash/")
-        app.mount(DASH_PREFIX, _PreservePathWSGI(dash_app.server, prefix=DASH_PREFIX))
+        dash_asgi = WSGIMiddleware(dash_app.server)
+        app.mount(DASH_PREFIX, _ClearRootPath(dash_asgi))
 
         # Redirect root to /dash for browser convenience
         @app.get("/")

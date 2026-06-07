@@ -16,6 +16,7 @@ from .chart_config import (
     COLORS, COHORT_COLORS, PROVINCE_COLORS,
     get_cohort_display_name, get_province_display_name,
 )
+from .data_sources_tab import build_data_sources_tab
 
 logger = logging.getLogger(__name__)
 
@@ -54,64 +55,74 @@ def create_app(base_dir: Path, url_base_pathname: str | None = None) -> Dash:
     app.layout = dbc.Container([
         html.H1(
             "Canadian Immigration ACI Research Tool",
-            style={"color": COLORS["primary"], "textAlign": "center", "marginBottom": 30},
+            style={"color": COLORS["primary"], "textAlign": "center", "marginBottom": 20},
         ),
 
-        # Controls row
-        dbc.Row([
-            dbc.Col([
-                html.Label("Province"),
-                dcc.Dropdown(
-                    id="province-selector",
-                    options=[{"label": get_province_display_name(p), "value": p} for p in provinces],
-                    value="ON",
-                    clearable=False,
-                ),
-            ], width=3),
-            dbc.Col([
-                html.Label("Year Range"),
-                dcc.RangeSlider(
-                    id="year-slider",
-                    min=min(years),
-                    max=max(years),
-                    step=1,
-                    value=[min(years), max(years)],
-                    marks={str(y): str(y) for y in years},
-                ),
-            ], width=5),
-            dbc.Col([
-                html.Label("Weight Scenario"),
-                dcc.RadioItems(
-                    id="weight-toggle",
-                    options=[
-                        {"label": "Housing-Heavy", "value": "aci_housing_heavy"},
-                        {"label": "Equal", "value": "aci_equal"},
-                        {"label": "Fiscal-Heavy", "value": "aci_fiscal_heavy"},
-                    ],
-                    value="aci_equal",
-                    inline=True,
-                ),
-            ], width=4),
-        ], style={"marginBottom": 30}),
+        dbc.Tabs([
+            dbc.Tab(label="Dashboard", tab_id="tab-dashboard", children=[
 
-        # ACI Gauge
-        dbc.Row([
-            dbc.Col([
-                html.H4("ACI Gauge", style={"textAlign": "center"}),
-                dcc.Graph(id="aci-gauge"),
-            ], width=4),
-            dbc.Col([
-                html.H4("Intake: Actual vs Counterfactual", style={"textAlign": "center"}),
-                dcc.Graph(id="intake-comparison"),
-            ], width=8),
-        ]),
+                # Controls row
+                dbc.Row([
+                    dbc.Col([
+                        html.Label("Province"),
+                        dcc.Dropdown(
+                            id="province-selector",
+                            options=[{"label": get_province_display_name(p), "value": p} for p in provinces],
+                            value="ON",
+                            clearable=False,
+                        ),
+                    ], width=3),
+                    dbc.Col([
+                        html.Label("Year Range"),
+                        dcc.RangeSlider(
+                            id="year-slider",
+                            min=min(years),
+                            max=max(years),
+                            step=1,
+                            value=[min(years), max(years)],
+                            marks={str(y): str(y) for y in years},
+                        ),
+                    ], width=5),
+                    dbc.Col([
+                        html.Label("Weight Scenario"),
+                        dcc.RadioItems(
+                            id="weight-toggle",
+                            options=[
+                                {"label": "Housing-Heavy", "value": "aci_housing_heavy"},
+                                {"label": "Equal", "value": "aci_equal"},
+                                {"label": "Fiscal-Heavy", "value": "aci_fiscal_heavy"},
+                            ],
+                            value="aci_equal",
+                            inline=True,
+                        ),
+                    ], width=4),
+                ], style={"marginBottom": 30}),
 
-        # Welfare Loss Table
-        dbc.Row([
-            dbc.Col([
-                html.H4("Welfare Loss Breakdown", style={"textAlign": "center", "marginTop": 30}),
-                html.Div(id="welfare-table"),
-            ], width=12),
+                # ACI Gauge
+                dbc.Row([
+                    dbc.Col([
+                        html.H4("ACI Gauge", style={"textAlign": "center"}),
+                        dcc.Graph(id="aci-gauge"),
+                    ], width=4),
+                    dbc.Col([
+                        html.H4("Intake: Actual vs Counterfactual", style={"textAlign": "center"}),
+                        dcc.Graph(id="intake-comparison"),
+                    ], width=8),
+                ]),
+
+                # Welfare Loss Table
+                dbc.Row([
+                    dbc.Col([
+                        html.H4("Welfare Loss Breakdown", style={"textAlign": "center", "marginTop": 30}),
+                        html.Div(id="welfare-table"),
+                    ], width=12),
+                ]),
+
+            ]),
+
+            dbc.Tab(label="Data Sources", tab_id="tab-data-sources", children=[
+                build_data_sources_tab(base_dir),
+            ]),
         ]),
     ], fluid=True)
 

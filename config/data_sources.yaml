@@ -1,0 +1,136 @@
+# Data source metadata for the IMMath ACI Research Tool.
+# Used by the Data Sources tab and the future AI agent refresh skill.
+
+sources:
+  - id: ircc
+    display_name: "IRCC Open Data Portal"
+    organization: "Immigration, Refugees and Citizenship Canada"
+    url: "https://open.canada.ca/data/en/dataset/f7e5498e-0ad8-4417-85c9-9b8aff9b9eda"
+    description: >
+      Immigration intake by province, quarter, and category:
+      Permanent Residents, Study Permits, TFWP Work Permits,
+      and IMP Work Permits. Values rounded to nearest 5;
+      values 0-5 suppressed as "--".
+    coverage_years: "2018-2026"
+    update_mechanism: auto
+    update_frequency: "Monthly"
+    raw_files:
+      - "data/raw/ircc/ODP-PR-PT_IMMCAT.csv"
+      - "data/raw/ircc/ODP-TR-Study-IS_PT_study.csv"
+      - "data/raw/ircc/ODP-TR-Work-TFWP-PT_program.csv"
+      - "data/raw/ircc/ODP-TR-Work-IMP-PT_program.csv"
+    cleaned_file: "data/cleaned/ircc_intake.parquet"
+
+  - id: statcan_labour
+    display_name: "StatCan Labour & Fiscal"
+    organization: "Statistics Canada"
+    url: "https://www150.statcan.gc.ca/n1/en/type/data"
+    description: >
+      Labour force characteristics (Table 14-10-0287),
+      annual wage rates (Table 14-10-0064),
+      job vacancies (Table 14-10-0371), and
+      municipal government fiscal balance (Table 10-10-0020).
+    coverage_years: "2018-2026"
+    update_mechanism: auto
+    update_frequency: "Quarterly"
+    raw_files:
+      - "data/raw/statcan/14100287.csv"
+      - "data/raw/statcan/14100064.csv"
+      - "data/raw/statcan/14100371.csv"
+      - "data/raw/statcan/10100020.csv"
+    cleaned_file: "data/cleaned/statcan_labour_fiscal.parquet"
+
+  - id: cmhc_housing
+    display_name: "CMHC Housing (via StatCan)"
+    organization: "Canada Mortgage and Housing Corporation"
+    url: "https://www.cmhc-schl.gc.ca/professionals/housing-markets-data-and-research/housing-data-data-tables/housing-market-data/housing-starts-data-tables"
+    description: >
+      Housing starts (Table 34-10-0126), rental vacancy rates
+      (Table 34-10-0127), and average 2-bedroom rent
+      (Table 34-10-0133) by province. Originally from CMHC,
+      reported through StatCan.
+    coverage_years: "2018-2026"
+    update_mechanism: auto
+    update_frequency: "Annually"
+    raw_files:
+      - "data/raw/statcan/34100126.csv"
+      - "data/raw/statcan/34100127.csv"
+      - "data/raw/statcan/34100133.csv"
+    cleaned_file: "data/cleaned/cmhc_housing.parquet"
+
+  - id: cihi_health
+    display_name: "CIHI Health Capacity"
+    organization: "Canadian Institute for Health Information"
+    url: "https://www.cihi.ca/en/access-data-reports"
+    description: >
+      Health system capacity indicators: median priority procedure
+      wait times, hospital occupancy rates, ER wait hours, and
+      alternate level of care days. Compiled from CIHI Wait Times
+      Reports 2019-2024.
+    coverage_years: "2018-2024"
+    update_mechanism: manual
+    update_frequency: "Annually (reports published ~June)"
+    raw_files:
+      - "manual_data/cihi_fallback.csv"
+    cleaned_file: "data/cleaned/cihi_health.parquet"
+
+  - id: school_capacity
+    display_name: "School Capacity"
+    organization: "Provincial Education Ministries"
+    url: "#"
+    description: >
+      K-12 school capacity metrics: public school enrollment,
+      capacity utilization percentage, and student-teacher ratios
+      by province. Compiled from provincial education ministry
+      reports and Statistics Canada education statistics.
+    coverage_years: "2018-2025"
+    update_mechanism: manual
+    update_frequency: "Annually (fall enrollment data)"
+    raw_files:
+      - "manual_data/school_capacity.csv"
+    cleaned_file: "data/cleaned/school_capacity.parquet"
+
+derived_outputs:
+  - id: master_panel
+    display_name: "Master Analytical Panel"
+    file: "data/master/master_panel.parquet"
+    category: "master"
+    description: >
+      All sources joined by (year, province, cohort_type) with
+      normalized dimension scores and 3 ACI weight scenarios.
+
+  - id: counterfactual_series
+    display_name: "Counterfactual Intake Series"
+    file: "outputs/data/counterfactual_series.csv"
+    category: "outputs"
+    description: "Optimal vs actual intake by year/province/cohort/scenario"
+
+  - id: counterfactual_summary
+    display_name: "Counterfactual Summary"
+    file: "outputs/data/counterfactual_summary.csv"
+    category: "outputs"
+    description: "Annual totals: actual, optimal, delta, delta %"
+
+  - id: welfare_loss
+    display_name: "Welfare Loss Decomposition"
+    file: "outputs/data/welfare_loss_decomposition.csv"
+    category: "outputs"
+    description: "Welfare loss by year and province"
+
+  - id: decomposition
+    display_name: "Dimensional Decomposition"
+    file: "outputs/data/dimensional_decomposition.csv"
+    category: "outputs"
+    description: "Welfare loss contribution by dimension (housing, labour, etc.)"
+
+  - id: cohort_niv
+    display_name: "Cohort NIV Comparison"
+    file: "outputs/data/cohort_niv.csv"
+    category: "outputs"
+    description: "Net present value analysis per cohort type"
+
+  - id: lambda_results
+    display_name: "Lambda Regression Results"
+    file: "outputs/data/lambda_regression_results.csv"
+    category: "outputs"
+    description: "Rank-2 projection regression coefficients and diagnostics"

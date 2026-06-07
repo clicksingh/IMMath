@@ -12,9 +12,9 @@ import logging
 from pathlib import Path
 
 from a2wsgi import WSGIMiddleware
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from strawberry.fastapi import GraphQLRouter
 
 from .errors import graphql_error_formatter
@@ -89,6 +89,29 @@ def create_api(base_dir: Path, debug: bool = False) -> FastAPI:
         graphql_ide="graphiql" if debug else None,
     )
     app.include_router(graphql_app, prefix="/graphql")
+
+    # File downloads — must be registered BEFORE the /dash mount
+    DOWNLOAD_DIRS = {
+        "cleaned": "data/cleaned",
+        "master": "data/master",
+        "outputs": "outputs/data",
+    }
+
+    @app.get("/dash/downloads/{category}/{filename}")
+    def download_file(category: str, filename: str, request: Request):
+        if category not in DOWNLOAD_DIRS:
+            raise HTTPException(status_code=400, detail="Invalid category")
+        file_path = (base_dir / DOWNLOAD_DIRS[category] / filename).resolve()
+        base_resolved = base_dir.resolve()
+        if not str(file_path).startswith(str(base_resolved)):
+            raise HTTPException(status_code=403, detail="Access denied")
+        if not file_path.exists():
+            raise HTTPException(status_code=404, detail="File not found")
+        return FileResponse(
+            file_path,
+            media_type="application/octet-stream",
+            filename=filename,
+        )
 
     # Dash dashboard — mounted as WSGI sub-app at /dash
     try:

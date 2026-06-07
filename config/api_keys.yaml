@@ -1,0 +1,12 @@
+# API Keys for IMMath ACI Research Tool
+# Tiers: anonymous (default), basic, premium
+# Anonymous tier is used when no X-API-Key header is provided.
+
+keys:
+  - key: "immath_basic_dev001"
+    tier: "basic"
+    label: "Development Basic"
+
+  - key: "immath_premium_dev001"
+    tier: "premium"
+    label: "Development Premium"

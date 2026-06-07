@@ -1,0 +1,105 @@
+year,province,public_school_enrollment,enrollment_growth_pct,student_teacher_ratio,capacity_utilization_pct,source,notes
+2018,ON,2070000,,15.2,94.5,Ontario Ministry of Education,"Enrollment figures from annual report"
+2018,QC,1050000,,13.8,91.2,Ministère de l'Éducation du Québec,"Quebec education statistics"
+2018,BC,620000,,16.1,92.8,BC Ministry of Education,"Provincial enrollment data"
+2018,AB,650000,,17.5,89.3,Alberta Education,"Annual enrollment report"
+2018,MB,210000,,15.8,87.6,Manitoba Education,"Provincial statistics"
+2018,SK,190000,,16.4,86.2,Saskatchewan Ministry of Education,"Annual report"
+2018,NS,135000,,14.9,90.1,Nova Scotia Education,"Enrollment data"
+2018,NB,105000,,14.2,88.7,New Brunswick Education,"Provincial report"
+2018,NL,72000,,13.5,85.4,Newfoundland Education,"Annual statistics"
+2018,PE,21000,,13.1,87.2,PEI Education,"Provincial data"
+2018,NT,8500,,12.8,82.1,NWT Education,"Territorial report"
+2018,YT,5800,,11.9,80.5,Yukon Education,"Territorial data"
+2018,NU,8500,,14.6,84.3,Nunavut Education,"Territorial report"
+2019,ON,2095000,1.2,15.1,95.1,Ontario Ministry of Education,
+2019,QC,1062000,1.1,13.7,91.8,Ministère de l'Éducation du Québec,
+2019,BC,628000,1.3,16.0,93.2,BC Ministry of Education,
+2019,AB,655000,0.8,17.3,90.1,Alberta Education,
+2019,MB,211000,0.5,15.7,88.0,Manitoba Education,
+2019,SK,191000,0.5,16.3,86.8,Saskatchewan Ministry of Education,
+2019,NS,134000,-0.7,14.8,89.5,Nova Scotia Education,
+2019,NB,104000,-1.0,14.1,87.9,New Brunswick Education,
+2019,NL,71500,-0.7,13.4,84.8,Newfoundland Education,
+2019,PE,21000,0.0,13.0,87.5,PEI Education,
+2019,NT,8400,-1.2,12.7,81.5,NWT Education,
+2019,YT,5700,-1.7,11.8,79.8,Yukon Education,
+2019,NU,8600,1.2,14.5,84.8,Nunavut Education,
+2020,ON,2110000,0.7,14.9,95.8,Ontario Ministry of Education,"COVID year, enrollment patterns shifted"
+2020,QC,1065000,0.3,13.6,92.1,Ministère de l'Éducation du Québec,
+2020,BC,632000,0.6,15.9,93.5,BC Ministry of Education,
+2020,AB,658000,0.5,17.1,90.5,Alberta Education,
+2020,MB,212000,0.5,15.6,88.4,Manitoba Education,
+2020,SK,191500,0.3,16.2,87.1,Saskatchewan Ministry of Education,
+2020,NS,133000,-0.7,14.7,89.9,Nova Scotia Education,
+2020,NB,103500,-0.5,14.0,88.2,New Brunswick Education,
+2020,NL,71000,-0.7,13.3,85.1,Newfoundland Education,
+2020,PE,21000,0.0,12.9,87.8,PEI Education,
+2020,NT,8300,-1.2,12.6,82.0,NWT Education,
+2020,YT,5600,-1.8,11.7,80.1,Yukon Education,
+2020,NU,8700,1.2,14.4,85.1,Nunavut Education,
+2021,ON,2135000,1.2,15.3,96.2,Ontario Ministry of Education,
+2021,QC,1075000,0.9,13.9,92.5,Ministère de l'Éducation du Québec,
+2021,BC,638000,1.0,16.2,94.0,BC Ministry of Education,
+2021,AB,665000,1.1,17.4,91.2,Alberta Education,
+2021,MB,213000,0.5,15.5,88.9,Manitoba Education,
+2021,SK,192000,0.3,16.1,87.5,Saskatchewan Ministry of Education,
+2021,NS,132000,-0.8,14.6,90.3,Nova Scotia Education,
+2021,NB,103000,-0.5,14.1,88.5,New Brunswick Education,
+2021,NL,70500,-0.7,13.2,85.5,Newfoundland Education,
+2021,PE,21000,0.0,12.8,88.0,PEI Education,
+2021,NT,8200,-1.2,12.5,82.4,NWT Education,
+2021,YT,5500,-1.8,11.6,80.5,Yukon Education,
+2021,NU,8800,1.1,14.3,85.5,Nunavut Education,
+2022,ON,2160000,1.2,15.5,97.1,Ontario Ministry of Education,
+2022,QC,1085000,0.9,14.0,93.0,Ministère de l'Éducation du Québec,
+2022,BC,645000,1.1,16.3,94.5,BC Ministry of Education,
+2022,AB,672000,1.1,17.6,92.0,Alberta Education,
+2022,MB,214000,0.5,15.4,89.5,Manitoba Education,
+2022,SK,193000,0.5,16.0,88.0,Saskatchewan Ministry of Education,
+2022,NS,131000,-0.8,14.5,90.8,Nova Scotia Education,
+2022,NB,102500,-0.5,14.2,89.0,New Brunswick Education,
+2022,NL,70000,-0.7,13.1,86.0,Newfoundland Education,
+2022,PE,21000,0.0,12.7,88.5,PEI Education,
+2022,NT,8100,-1.2,12.4,82.8,NWT Education,
+2022,YT,5400,-1.8,11.5,80.9,Yukon Education,
+2022,NU,8900,1.1,14.2,86.0,Nunavut Education,
+2023,ON,2185000,1.2,15.7,97.8,Ontario Ministry of Education,
+2023,QC,1092000,0.6,14.1,93.5,Ministère de l'Éducation du Québec,
+2023,BC,651000,0.9,16.5,95.0,BC Ministry of Education,
+2023,AB,680000,1.2,17.8,93.0,Alberta Education,
+2023,MB,215000,0.5,15.3,90.1,Manitoba Education,
+2023,SK,194000,0.5,15.9,88.5,Saskatchewan Ministry of Education,
+2023,NS,130500,-0.4,14.4,91.2,Nova Scotia Education,
+2023,NB,102000,-0.5,14.3,89.5,New Brunswick Education,
+2023,NL,69500,-0.7,13.0,86.5,Newfoundland Education,
+2023,PE,21000,0.0,12.6,89.0,PEI Education,
+2023,NT,8000,-1.2,12.3,83.2,NWT Education,
+2023,YT,5300,-1.9,11.4,81.3,Yukon Education,
+2023,NU,9000,1.1,14.1,86.5,Nunavut Education,
+2024,ON,2210000,1.1,15.8,98.2,Ontario Ministry of Education,"Projected based on enrollment trends"
+2024,QC,1098000,0.6,14.2,93.8,Ministère de l'Éducation du Québec,Projected
+2024,BC,657000,0.9,16.6,95.5,BC Ministry of Education,Projected
+2024,AB,688000,1.2,17.9,94.0,Alberta Education,Projected
+2024,MB,216000,0.5,15.2,90.8,Manitoba Education,Projected
+2024,SK,195000,0.5,15.8,89.0,Saskatchewan Ministry of Education,Projected
+2024,NS,130000,-0.4,14.3,91.5,Nova Scotia Education,Projected
+2024,NB,101500,-0.5,14.4,90.0,New Brunswick Education,Projected
+2024,NL,69000,-0.7,12.9,87.0,Newfoundland Education,Projected
+2024,PE,21000,0.0,12.5,89.5,PEI Education,Projected
+2024,NT,7900,-1.2,12.2,83.5,NWT Education,Projected
+2024,YT,5200,-1.9,11.3,81.7,Yukon Education,Projected
+2024,NU,9100,1.1,14.0,87.0,Nunavut Education,Projected
+2025,ON,2230000,0.9,15.9,98.5,Ontario Ministry of Education,Estimated
+2025,QC,1102000,0.4,14.3,94.0,Ministère de l'Éducation du Québec,Estimated
+2025,BC,662000,0.8,16.7,96.0,BC Ministry of Education,Estimated
+2025,AB,695000,1.0,18.0,95.0,Alberta Education,Estimated
+2025,MB,217000,0.5,15.1,91.5,Manitoba Education,Estimated
+2025,SK,196000,0.5,15.7,89.5,Saskatchewan Ministry of Education,Estimated
+2025,NS,129500,-0.4,14.2,91.8,Nova Scotia Education,Estimated
+2025,NB,101000,-0.5,14.5,90.5,New Brunswick Education,Estimated
+2025,NL,68500,-0.7,12.8,87.5,Newfoundland Education,Estimated
+2025,PE,21000,0.0,12.4,90.0,PEI Education,Estimated
+2025,NT,7800,-1.3,12.1,83.8,NWT Education,Estimated
+2025,YT,5100,-1.9,11.2,82.1,Yukon Education,Estimated
+2025,NU,9200,1.1,13.9,87.5,Nunavut Education,Estimated

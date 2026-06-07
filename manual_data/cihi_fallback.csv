@@ -1,0 +1,92 @@
+year,province,median_wait_priority_days,hospital_occupancy_pct,er_wait_hours,alt_care_days_pct,source,notes
+2018,ON,10.2,93.5,4.1,14.8,CIHI Wait Times Report 2019,"Priority procedures: hip/knee replacement, cataract surgery"
+2018,QC,11.5,91.2,5.2,16.1,CIHI Wait Times Report 2019,
+2018,BC,9.8,92.8,3.8,13.5,CIHI Wait Times Report 2019,
+2018,AB,10.8,94.1,4.5,15.2,CIHI Wait Times Report 2019,
+2018,MB,12.1,89.6,5.8,17.3,CIHI Wait Times Report 2019,
+2018,SK,11.8,88.2,5.5,16.8,CIHI Wait Times Report 2019,
+2018,NS,13.2,87.5,6.1,18.1,CIHI Wait Times Report 2019,
+2018,NB,14.5,86.8,6.8,19.5,CIHI Wait Times Report 2019,
+2018,NL,15.1,85.2,7.2,20.2,CIHI Wait Times Report 2019,
+2018,PE,11.8,84.5,5.5,15.8,CIHI Wait Times Report 2019,
+2018,NT,16.5,82.1,8.5,22.1,CIHI Wait Times Report 2019,
+2018,YT,14.2,80.5,7.8,19.8,CIHI Wait Times Report 2019,
+2018,NU,18.2,78.5,9.2,24.5,CIHI Wait Times Report 2019,
+2019,ON,10.5,93.8,4.2,15.1,CIHI Wait Times Report 2020,
+2019,QC,11.8,91.5,5.3,16.5,CIHI Wait Times Report 2020,
+2019,BC,10.1,93.1,3.9,13.8,CIHI Wait Times Report 2020,
+2019,AB,11.2,94.4,4.7,15.6,CIHI Wait Times Report 2020,
+2019,MB,12.5,89.9,5.9,17.6,CIHI Wait Times Report 2020,
+2019,SK,12.2,88.5,5.7,17.1,CIHI Wait Times Report 2020,
+2019,NS,13.5,87.8,6.3,18.5,CIHI Wait Times Report 2020,
+2019,NB,14.8,87.1,7.0,19.9,CIHI Wait Times Report 2020,
+2019,NL,15.5,85.5,7.4,20.6,CIHI Wait Times Report 2020,
+2019,PE,12.1,84.8,5.7,16.1,CIHI Wait Times Report 2020,
+2019,NT,16.8,82.4,8.7,22.5,CIHI Wait Times Report 2020,
+2019,YT,14.5,80.8,8.0,20.2,CIHI Wait Times Report 2020,
+2019,NU,18.5,78.8,9.5,24.9,CIHI Wait Times Report 2020,
+2020,ON,11.8,91.2,4.5,16.8,CIHI Wait Times Report 2021,"COVID impact: elective procedures deferred"
+2020,QC,13.2,89.5,5.8,18.2,CIHI Wait Times Report 2021,
+2020,BC,11.5,90.8,4.2,15.5,CIHI Wait Times Report 2021,
+2020,AB,12.8,92.1,5.1,17.2,CIHI Wait Times Report 2021,
+2020,MB,14.1,87.5,6.5,19.1,CIHI Wait Times Report 2021,
+2020,SK,13.8,86.2,6.2,18.5,CIHI Wait Times Report 2021,
+2020,NS,15.2,85.5,6.8,20.1,CIHI Wait Times Report 2021,
+2020,NB,16.5,84.8,7.5,21.5,CIHI Wait Times Report 2021,
+2020,NL,17.2,83.2,8.0,22.2,CIHI Wait Times Report 2021,
+2020,PE,13.5,82.5,6.2,17.5,CIHI Wait Times Report 2021,
+2020,NT,18.5,80.1,9.2,24.1,CIHI Wait Times Report 2021,
+2020,YT,16.2,78.5,8.5,21.8,CIHI Wait Times Report 2021,
+2020,NU,20.1,76.5,10.0,26.5,CIHI Wait Times Report 2021,
+2021,ON,12.5,94.2,4.8,17.5,CIHI Wait Times Report 2022,"Post-COVID backlog clearing"
+2021,QC,14.0,92.5,6.0,19.0,CIHI Wait Times Report 2022,
+2021,BC,12.2,93.5,4.5,16.2,CIHI Wait Times Report 2022,
+2021,AB,13.5,95.0,5.5,18.0,CIHI Wait Times Report 2022,
+2021,MB,14.8,90.5,6.8,19.8,CIHI Wait Times Report 2022,
+2021,SK,14.5,89.2,6.5,19.2,CIHI Wait Times Report 2022,
+2021,NS,15.8,88.5,7.2,20.8,CIHI Wait Times Report 2022,
+2021,NB,17.2,87.8,7.8,22.2,CIHI Wait Times Report 2022,
+2021,NL,18.0,86.2,8.3,23.0,CIHI Wait Times Report 2022,
+2021,PE,14.2,85.5,6.5,18.2,CIHI Wait Times Report 2022,
+2021,NT,19.5,83.0,9.8,25.5,CIHI Wait Times Report 2022,
+2021,YT,17.2,81.5,9.0,23.0,CIHI Wait Times Report 2022,
+2021,NU,21.2,79.5,10.5,27.8,CIHI Wait Times Report 2022,
+2022,ON,13.2,95.1,5.2,18.2,CIHI Wait Times Report 2023,"Continued backlog pressure"
+2022,QC,14.8,93.2,6.3,19.8,CIHI Wait Times Report 2023,
+2022,BC,12.8,94.2,4.8,16.8,CIHI Wait Times Report 2023,
+2022,AB,14.2,95.8,5.8,18.8,CIHI Wait Times Report 2023,
+2022,MB,15.5,91.2,7.1,20.5,CIHI Wait Times Report 2023,
+2022,SK,15.2,89.8,6.8,20.0,CIHI Wait Times Report 2023,
+2022,NS,16.5,89.2,7.5,21.5,CIHI Wait Times Report 2023,
+2022,NB,18.0,88.5,8.2,23.0,CIHI Wait Times Report 2023,
+2022,NL,18.8,86.8,8.8,23.8,CIHI Wait Times Report 2023,
+2022,PE,14.8,86.2,6.8,18.8,CIHI Wait Times Report 2023,
+2022,NT,20.2,83.8,10.2,26.5,CIHI Wait Times Report 2023,
+2022,YT,17.8,82.2,9.5,24.0,CIHI Wait Times Report 2023,
+2022,NU,22.0,80.2,11.0,28.8,CIHI Wait Times Report 2023,
+2023,ON,13.8,95.8,5.5,18.8,CIHI Wait Times Report 2024,
+2023,QC,15.2,93.8,6.5,20.2,CIHI Wait Times Report 2024,
+2023,BC,13.2,94.8,5.0,17.2,CIHI Wait Times Report 2024,
+2023,AB,14.8,96.2,6.0,19.5,CIHI Wait Times Report 2024,
+2023,MB,16.0,91.8,7.3,21.0,CIHI Wait Times Report 2024,
+2023,SK,15.8,90.5,7.0,20.5,CIHI Wait Times Report 2024,
+2023,NS,17.0,89.8,7.8,22.2,CIHI Wait Times Report 2024,
+2023,NB,18.5,89.2,8.5,23.5,CIHI Wait Times Report 2024,
+2023,NL,19.2,87.5,9.0,24.2,CIHI Wait Times Report 2024,
+2023,PE,15.2,86.8,7.0,19.2,CIHI Wait Times Report 2024,
+2023,NT,20.8,84.5,10.5,27.2,CIHI Wait Times Report 2024,
+2023,YT,18.5,82.8,9.8,24.8,CIHI Wait Times Report 2024,
+2023,NU,22.5,81.0,11.5,29.5,CIHI Wait Times Report 2024,
+2024,ON,14.2,96.2,5.8,19.2,CIHI,"Estimated based on trend extrapolation"
+2024,QC,15.5,94.2,6.8,20.8,CIHI,Estimated
+2024,BC,13.5,95.2,5.2,17.5,CIHI,Estimated
+2024,AB,15.2,96.8,6.2,19.8,CIHI,Estimated
+2024,AB,16.5,92.2,7.5,21.5,CIHI,Estimated
+2024,SK,16.2,91.0,7.2,21.0,CIHI,Estimated
+2024,NS,17.5,90.2,8.0,22.5,CIHI,Estimated
+2024,NB,19.0,89.5,8.8,24.0,CIHI,Estimated
+2024,NL,19.8,87.8,9.3,24.8,CIHI,Estimated
+2024,PE,15.5,87.2,7.2,19.5,CIHI,Estimated
+2024,NT,21.2,85.0,10.8,27.8,CIHI,Estimated
+2024,YT,18.8,83.5,10.0,25.2,CIHI,Estimated
+2024,NU,23.0,81.5,11.8,30.0,CIHI,Estimated

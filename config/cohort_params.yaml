@@ -1,0 +1,149 @@
+# Cohort Parameters for Immigration NIV Analysis
+# All parameters are adjustable. Sources documented per parameter.
+# Do NOT hardcode these values in code — always read from this file.
+
+cohort_types:
+  high_quality_student:
+    display_name: "High-Quality International Student"
+    description: "University/college students in STEM, business, or professional programs at recognized institutions"
+    annual_earnings_post_grad: 65000        # CAD - Source: StatCan Table 14-10-0065-01, median income of recent immigrants with bachelor's degree
+    transition_probability: 0.35             # Source: IRCC Transition Outcomes Study 2023
+    annual_tax_contribution: 18200           # 28% effective rate - Source: CRA average effective rates
+    housing_consumption_annual: 14500        # Shared rental - Source: CMHC Rental Market Survey
+    health_service_consumption_annual: 2800  # Source: CIHI Per Capita Health Spending by Age Group
+    education_infrastructure_cost: 1200      # Marginal cost per student - Source: Provincial education budgets
+    integrity_processing_cost: 850           # Source: IRCC Annual Report processing costs / applications
+    discount_rate: 0.03                      # Social discount rate - Source: Treasury Board of Canada
+    time_horizon_years: 25                   # Standard fiscal projection window
+    source_notes: "Earnings based on StatCan longitudinal immigration database. Transition rates from IRCC Open Data."
+
+  low_quality_student:
+    display_name: "Low-Quality International Student"
+    description: "Students at unregulated or marginal institutions, primarily pursuing credential with low labour market value"
+    annual_earnings_post_grad: 28000         # Source: StatCan, lower quartile of recent immigrant earnings
+    transition_probability: 0.12             # Much lower transition - Source: IRCC data on institutions with <50% completion
+    annual_tax_contribution: 5600            # 20% effective rate on lower income
+    housing_consumption_annual: 14500        # Similar rental costs
+    health_service_consumption_annual: 2800  # Similar per-capita
+    education_infrastructure_cost: 1200      # Same marginal cost
+    integrity_processing_cost: 2200          # Higher processing costs due to fraud screening - Source: IRCC
+    discount_rate: 0.03
+    time_horizon_years: 25
+    source_notes: "Lower earnings reflect credential mismatch and poor institution quality. Higher integrity costs from enhanced screening."
+
+  high_wage_worker:
+    display_name: "High-Wage Temporary/Permanent Worker"
+    description: "Workers in skilled occupations (TEER 0-2) with above-median provincial wages"
+    annual_earnings: 95000                   # Source: StatCan Table 14-10-0065-01, above-median
+    transition_probability: 0.65             # Source: IRCC Express Entry and PNP transition data
+    annual_tax_contribution: 30400           # 32% effective rate
+    housing_consumption_annual: 22000        # Owner/renter mix - Source: CMHC
+    health_service_consumption_annual: 3200  # Slightly higher utilization
+    education_infrastructure_cost: 0         # Adults don't use K-12
+    integrity_processing_cost: 600           # Streamlined processing for skilled workers
+    discount_rate: 0.03
+    time_horizon_years: 25
+    source_notes: "Earnings from LMIA data and StatCan wage survey. High transition reflects Express Entry design."
+
+  low_wage_worker:
+    display_name: "Low-Wage Temporary Worker"
+    description: "Workers in semi-skilled/unskilled occupations (TEER 4-5) at or below median wage"
+    annual_earnings: 32000                   # Source: StatCan, lower quartile
+    transition_probability: 0.15             # Source: IRCC pilot programs data
+    annual_tax_contribution: 5760            # 18% effective rate
+    housing_consumption_annual: 14500        # Primarily rental - Source: CMHC
+    health_service_consumption_annual: 3000  # Similar per-capita
+    education_infrastructure_cost: 0
+    integrity_processing_cost: 1200          # Moderate compliance screening
+    discount_rate: 0.03
+    time_horizon_years: 25
+    source_notes: "Reflects TFWP and IMP streams. Low transition reflects pathway restrictions."
+
+  francophone_pr:
+    display_name: "Francophone Permanent Resident"
+    description: "French-speaking permanent residents, typically through Express Entry French proficiency or mobility francophone streams"
+    annual_earnings: 72000                   # Source: StatCan, francophone immigrant earnings
+    transition_probability: 1.0              # Already PR
+    annual_tax_contribution: 21600           # 30% effective rate
+    housing_consumption_annual: 19500        # More settle in lower-cost QC - Source: CMHC
+    health_service_consumption_annual: 3000
+    education_infrastructure_cost: 0
+    integrity_processing_cost: 500           # Lower - PR processing is thorough but one-time
+    discount_rate: 0.03
+    time_horizon_years: 35                   # Longer horizon for PR
+    source_notes: "Francophone earnings from StatCan. Settlement patterns from IRCC admission data."
+
+  in_canada_transition:
+    display_name: "In-Canada Transition (TR to PR)"
+    description: "Temporary residents transitioning to permanent residence via CEC, provincial nominees, or other in-Canada pathways"
+    annual_earnings: 58000                   # Source: StatCan, CEC median income
+    transition_probability: 1.0              # Transitioning to PR
+    annual_tax_contribution: 15660           # 27% effective rate
+    housing_consumption_annual: 18000        # Established rental housing
+    health_service_consumption_annual: 2900
+    education_infrastructure_cost: 0
+    integrity_processing_cost: 700
+    discount_rate: 0.03
+    time_horizon_years: 30
+    source_notes: "Canadian Experience Class data from IRCC. Earnings reflect Canadian work experience premium."
+
+  family_class:
+    display_name: "Family Class Immigrant"
+    description: "Sponsored spouses, partners, children, parents, and grandparents"
+    annual_earnings: 38000                   # Source: StatCa, family class economic outcomes
+    transition_probability: 1.0              # PR upon arrival
+    annual_tax_contribution: 7600            # 20% effective rate
+    housing_consumption_annual: 19500        # Family housing - Source: CMHC
+    health_service_consumption_annual: 3500  # Higher utilization (children, elderly)
+    education_infrastructure_cost: 2800      # Children use K-12 system
+    integrity_processing_cost: 500
+    discount_rate: 0.03
+    time_horizon_years: 30
+    source_notes: "Family class earnings from StatCan Longitudinal Immigration Database. Health costs reflect age distribution."
+
+  refugee:
+    display_name: "Government-Assisted / Privately Sponsored Refugee"
+    description: "Resettled refugees and protected persons"
+    annual_earnings: 22000                   # Source: StatCan, refugee economic outcomes (5-year mark)
+    transition_probability: 1.0              # PR upon arrival
+    annual_tax_contribution: 3300            # 15% effective rate
+    housing_consumption_annual: 16000        # Subsidized housing common - Source: CMHC
+    health_service_consumption_annual: 4200  # Higher initial utilization - Source: CIHI
+    education_infrastructure_cost: 3500      # Language training + K-12
+    integrity_processing_cost: 2800          # IRB processing costs - Source: IRB Annual Report
+    settlement_services_annual: 8500         # Source: IRCC Settlement Program spending per capita
+    discount_rate: 0.03
+    time_horizon_years: 30
+    source_notes: "Refugee outcomes from StatCan Longitudinal Immigration Database. Settlement costs from IRCC program evaluation."
+
+# Social welfare weight scenarios for welfare loss calculation
+welfare_weights:
+  equal:
+    description: "All dimensions weighted equally"
+    dimensions:
+      housing_affordability: 0.167
+      labour_market_quality: 0.167
+      health_capacity: 0.167
+      fiscal_contribution: 0.167
+      social_cohesion: 0.167
+      credential_utilization: 0.165
+
+  human_capital:
+    description: "Emphasis on labour market and fiscal outcomes"
+    dimensions:
+      housing_affordability: 0.10
+      labour_market_quality: 0.25
+      health_capacity: 0.10
+      fiscal_contribution: 0.30
+      social_cohesion: 0.10
+      credential_utilization: 0.15
+
+  absorptive_capacity:
+    description: "Emphasis on infrastructure and service capacity"
+    dimensions:
+      housing_affordability: 0.30
+      labour_market_quality: 0.10
+      health_capacity: 0.25
+      fiscal_contribution: 0.10
+      social_cohesion: 0.15
+      credential_utilization: 0.10

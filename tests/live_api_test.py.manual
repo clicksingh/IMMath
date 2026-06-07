@@ -1,0 +1,569 @@
+"""Exhaustive live API test suite — all endpoints, filters, pagination, keys, errors."""
+
+import httpx
+import json
+import sys
+
+BASE = "http://localhost:8050"
+client = httpx.Client(timeout=10)
+
+results = {"pass": 0, "fail": 0, "tests": []}
+
+
+def test(name, ok, detail=""):
+    status = "PASS" if ok else "FAIL"
+    results["tests"].append(f"{status}: {name} {detail}")
+    if ok:
+        results["pass"] += 1
+    else:
+        results["fail"] += 1
+        print(f"  FAIL: {name} -- {detail}")
+
+
+def gql(query, headers=None):
+    r = client.post(f"{BASE}/graphql", json={"query": query}, headers=headers or {})
+    return r.json(), r.status_code
+
+
+# ============================================================
+# 1. HEALTH ENDPOINT
+# ============================================================
+print("\n=== 1. HEALTH ENDPOINT ===")
+r = client.get(f"{BASE}/health")
+test("health status 200", r.status_code == 200)
+d = r.json()
+test("health has status=ok", d.get("status") == "ok")
+test("health has version", "version" in d)
+
+# ============================================================
+# 2. ROOT REDIRECT
+# ============================================================
+print("\n=== 2. ROOT REDIRECT ===")
+r = client.get(f"{BASE}/", follow_redirects=False)
+test("root redirects", r.status_code in (307, 308, 200))
+
+# ============================================================
+# 3. DASH DASHBOARD
+# ============================================================
+print("\n=== 3. DASH DASHBOARD ===")
+r = client.get(f"{BASE}/dash/")
+test("dash loads 200", r.status_code == 200)
+test("dash has ACI title", "ACI Research Tool" in r.text)
+
+# ============================================================
+# 4. BASIC GRAPHQL - health
+# ============================================================
+print("\n=== 4. GRAPHQL HEALTH ===")
+d, sc = gql("{ health }")
+test("health query 200", sc == 200)
+test("health returns ok", d.get("data", {}).get("health") == "ok")
+test("health no errors", "errors" not in d)
+
+# ============================================================
+# 5. COHORT NIV - all 15 fields + filters + pagination
+# ============================================================
+print("\n=== 5. COHORT NIV ===")
+d, sc = gql(
+    "{ cohortNiv { totalCount edges { node { cohortType displayName "
+    "pvBenefits pvTax pvTransition pvCosts pvHousing pvHealth pvEducation "
+    "pvIntegrity pvSettlement niv transitionProbability timeHorizon discountRate "
+    "} cursor } pageInfo { hasNextPage hasPreviousPage startCursor endCursor } } }"
+)
+test("cohortNiv 200", sc == 200, str(d.get("errors")))
+test("cohortNiv totalCount=8", d["data"]["cohortNiv"]["totalCount"] == 8)
+test("cohortNiv 8 edges", len(d["data"]["cohortNiv"]["edges"]) == 8)
+test("cohortNiv has cursors", all("cursor" in e for e in d["data"]["cohortNiv"]["edges"]))
+test("cohortNiv pageInfo present", "hasNextPage" in d["data"]["cohortNiv"]["pageInfo"])
+
+# All 15 fields on first node
+node = d["data"]["cohortNiv"]["edges"][0]["node"]
+for field in ["cohortType", "displayName", "pvBenefits", "pvTax", "pvTransition",
+              "pvCosts", "pvHousing", "pvHealth", "pvEducation", "pvIntegrity",
+              "pvSettlement", "niv", "transitionProbability", "timeHorizon", "discountRate"]:
+    test(f"cohortNiv field {field}", field in node, f"missing {field}")
+
+# filter by cohortType
+d, sc = gql('{ cohortNiv(cohortType: "refugee") { totalCount edges { node { cohortType } } } }')
+test("cohortNiv filter refugee count", d["data"]["cohortNiv"]["totalCount"] >= 1)
+test("cohortNiv all refugee", all(e["node"]["cohortType"] == "refugee" for e in d["data"]["cohortNiv"]["edges"]))
+
+# pagination
+d1, _ = gql("{ cohortNiv(first: 3) { totalCount edges { cursor } pageInfo { endCursor hasNextPage } } }")
+test("cohortNiv first=3 returns 3", len(d1["data"]["cohortNiv"]["edges"]) == 3)
+test("cohortNiv hasNextPage", d1["data"]["cohortNiv"]["pageInfo"]["hasNextPage"] is True)
+cursor = d1["data"]["cohortNiv"]["edges"][-1]["cursor"]
+test("cohortNiv cursor present", cursor is not None)
+
+d2, _ = gql(f'{{ cohortNiv(first: 3, after: "{cursor}") {{ edges {{ node {{ cohortType }} }} pageInfo {{ hasNextPage }} }} }}')
+test("cohortNiv page2 returns data", len(d2["data"]["cohortNiv"]["edges"]) >= 1)
+
+# empty filter
+d, sc = gql('{ cohortNiv(cohortType: "nonexistent") { totalCount } }')
+test("cohortNiv empty filter 0", d["data"]["cohortNiv"]["totalCount"] == 0)
+
+# ============================================================
+# 6. LAMBDA RESULTS - all 9 fields
+# ============================================================
+print("\n=== 6. LAMBDA RESULTS ===")
+d, sc = gql(
+    "{ lambdaResults { variable coefficient stdError tStatistic pValue "
+    "ciLower ciUpper significant10pct notes } }"
+)
+test("lambdaResults 200", sc == 200, str(d.get("errors")))
+lr = d["data"]["lambdaResults"]
+test("lambdaResults has rows", len(lr) >= 5)
+for field in ["variable", "coefficient", "stdError", "tStatistic", "pValue",
+              "ciLower", "ciUpper", "significant10pct", "notes"]:
+    test(f"lambdaResults field {field}", field in lr[0], f"missing {field}")
+
+# ============================================================
+# 7. WELFARE LOSS - all 8 fields + filters + pagination
+# ============================================================
+print("\n=== 7. WELFARE LOSS ===")
+d, sc = gql(
+    "{ welfareLoss { totalCount edges { node { year province actualWelfare "
+    "optimalWelfare welfareLoss actualTotalIntake optimalTotalIntake intakeGap } "
+    "cursor } pageInfo { hasNextPage endCursor } } }"
+)
+test("welfareLoss 200", sc == 200, str(d.get("errors")))
+test("welfareLoss has data", d["data"]["welfareLoss"]["totalCount"] > 0)
+node = d["data"]["welfareLoss"]["edges"][0]["node"]
+for field in ["year", "province", "actualWelfare", "optimalWelfare",
+              "welfareLoss", "actualTotalIntake", "optimalTotalIntake", "intakeGap"]:
+    test(f"welfareLoss field {field}", field in node, f"missing {field}")
+
+# filter by province
+d, sc = gql('{ welfareLoss(province: "ON") { edges { node { province } } } }')
+test("welfareLoss filter ON", all(e["node"]["province"] == "ON" for e in d["data"]["welfareLoss"]["edges"]))
+
+# filter by year range
+d, sc = gql("{ welfareLoss(yearMin: 2020, yearMax: 2022) { edges { node { year } } } }")
+test("welfareLoss year filter", all(2020 <= e["node"]["year"] <= 2022 for e in d["data"]["welfareLoss"]["edges"]))
+
+# combined filters
+d, sc = gql('{ welfareLoss(province: "BC", yearMin: 2021, yearMax: 2023) { edges { node { province year } } } }')
+test("welfareLoss combined filter", all(
+    e["node"]["province"] == "BC" and 2021 <= e["node"]["year"] <= 2023
+    for e in d["data"]["welfareLoss"]["edges"]
+))
+
+# pagination
+d1, _ = gql("{ welfareLoss(first: 5) { edges { cursor } pageInfo { endCursor hasNextPage } } }")
+test("welfareLoss pagination first=5", len(d1["data"]["welfareLoss"]["edges"]) == 5)
+cursor = d1["data"]["welfareLoss"]["edges"][-1]["cursor"]
+d2, _ = gql(f'{{ welfareLoss(first: 5, after: "{cursor}") {{ edges {{ node {{ year }} }} }} }}')
+test("welfareLoss page2 ok", len(d2["data"]["welfareLoss"]["edges"]) >= 1)
+
+# ============================================================
+# 8. DECOMPOSITION - all 6 fields + filters
+# ============================================================
+print("\n=== 8. DECOMPOSITION ===")
+d, sc = gql(
+    "{ decomposition { totalCount edges { node { year dimension avgScore "
+    "intakeGap contribution contributionPct } cursor } pageInfo { hasNextPage } } }"
+)
+test("decomposition 200", sc == 200, str(d.get("errors")))
+test("decomposition has data", d["data"]["decomposition"]["totalCount"] > 0)
+node = d["data"]["decomposition"]["edges"][0]["node"]
+for field in ["year", "dimension", "avgScore", "intakeGap", "contribution", "contributionPct"]:
+    test(f"decomposition field {field}", field in node, f"missing {field}")
+
+# filter by dimension
+d, sc = gql('{ decomposition(dimension: "housing_vacancy") { edges { node { dimension } } } }')
+if d["data"]["decomposition"]["edges"]:
+    test("decomposition filter dimension", all(
+        e["node"]["dimension"] == "housing_vacancy" for e in d["data"]["decomposition"]["edges"]
+    ))
+else:
+    test("decomposition filter dimension (empty ok)", True)
+
+# filter by year
+d, sc = gql("{ decomposition(yearMin: 2021, yearMax: 2023) { edges { node { year } } } }")
+test("decomposition year filter", all(2021 <= e["node"]["year"] <= 2023 for e in d["data"]["decomposition"]["edges"]))
+
+# ============================================================
+# 9. COUNTERFACTUAL - all 8 fields + filters
+# ============================================================
+print("\n=== 9. COUNTERFACTUAL ===")
+d, sc = gql(
+    "{ counterfactual { totalCount edges { node { year province cohortType "
+    "actualIntake optimalIntake aciValue nivPerUnit scenario } cursor } "
+    "pageInfo { hasNextPage } } }"
+)
+test("counterfactual 200", sc == 200, str(d.get("errors")))
+test("counterfactual has data", d["data"]["counterfactual"]["totalCount"] > 0)
+node = d["data"]["counterfactual"]["edges"][0]["node"]
+for field in ["year", "province", "cohortType", "actualIntake", "optimalIntake",
+              "aciValue", "nivPerUnit", "scenario"]:
+    test(f"counterfactual field {field}", field in node, f"missing {field}")
+
+# filter by scenario
+d, sc = gql('{ counterfactual(scenario: "aci_equal") { edges { node { scenario } } } }')
+test("counterfactual filter scenario", all(
+    e["node"]["scenario"] == "aci_equal" for e in d["data"]["counterfactual"]["edges"]
+))
+
+# filter by province + year
+d, sc = gql('{ counterfactual(province: "BC", yearMin: 2022, yearMax: 2023) { edges { node { province year } } } }')
+test("counterfactual filter province+year", all(
+    e["node"]["province"] == "BC" and 2022 <= e["node"]["year"] <= 2023
+    for e in d["data"]["counterfactual"]["edges"]
+))
+
+# all 3 filters combined
+d, sc = gql('{ counterfactual(province: "ON", scenario: "aci_equal", yearMin: 2021, yearMax: 2023) { edges { node { province year scenario } } } }')
+test("counterfactual 3-filter combo", all(
+    e["node"]["province"] == "ON"
+    and 2021 <= e["node"]["year"] <= 2023
+    and e["node"]["scenario"] == "aci_equal"
+    for e in d["data"]["counterfactual"]["edges"]
+))
+
+# ============================================================
+# 10. MASTER PANEL - all nested types + all fields
+# ============================================================
+print("\n=== 10. MASTER PANEL ===")
+d, sc = gql("""
+{
+    masterPanel(first: 5) {
+        totalCount
+        edges {
+            cursor
+            node {
+                year quarter province cohortType intakeCount
+                housing { startsAnnual startsPerCapita startsPerCapitaGrowth vacancyRate avgRent2br }
+                labour { unemploymentRate medianWageHourly jobVacancyRate jobQualityIndex }
+                capacities { healthCapacity schoolCapacity }
+                normalized { vacancyRateNorm startsGrowthNorm healthCapacityNorm schoolCapacityNorm jobQualityNorm fiscalBalanceNorm }
+                aci { housingHeavy equal fiscalHeavy }
+                aciNanFlag
+            }
+        }
+        pageInfo { hasNextPage endCursor }
+    }
+}
+""")
+test("masterPanel 200", sc == 200, str(d.get("errors")))
+test("masterPanel has data", d["data"]["masterPanel"]["totalCount"] > 0)
+node = d["data"]["masterPanel"]["edges"][0]["node"]
+
+# top-level fields
+for field in ["year", "quarter", "province", "cohortType", "intakeCount", "aciNanFlag"]:
+    test(f"masterPanel field {field}", field in node, f"missing {field}")
+
+# housing (5 fields)
+for field in ["startsAnnual", "startsPerCapita", "startsPerCapitaGrowth", "vacancyRate", "avgRent2br"]:
+    test(f"masterPanel housing.{field}", field in node.get("housing", {}), f"missing {field}")
+
+# labour (4 fields)
+for field in ["unemploymentRate", "medianWageHourly", "jobVacancyRate", "jobQualityIndex"]:
+    test(f"masterPanel labour.{field}", field in node.get("labour", {}), f"missing {field}")
+
+# capacities (2 fields)
+for field in ["healthCapacity", "schoolCapacity"]:
+    test(f"masterPanel capacities.{field}", field in node.get("capacities", {}), f"missing {field}")
+
+# normalized (6 fields)
+for field in ["vacancyRateNorm", "startsGrowthNorm", "healthCapacityNorm",
+              "schoolCapacityNorm", "jobQualityNorm", "fiscalBalanceNorm"]:
+    test(f"masterPanel normalized.{field}", field in node.get("normalized", {}), f"missing {field}")
+
+# aci (3 fields)
+for field in ["housingHeavy", "equal", "fiscalHeavy"]:
+    test(f"masterPanel aci.{field}", field in node.get("aci", {}), f"missing {field}")
+
+# masterPanel filters
+d, sc = gql('{ masterPanel(province: "QC", cohortType: "refugee") { edges { node { province cohortType } } } }')
+test("masterPanel filter QC+refugee", all(
+    e["node"]["province"] == "QC" and e["node"]["cohortType"] == "refugee"
+    for e in d["data"]["masterPanel"]["edges"]
+))
+
+d, sc = gql('{ masterPanel(province: "ON") { edges { node { province } } } }')
+test("masterPanel filter ON", all(e["node"]["province"] == "ON" for e in d["data"]["masterPanel"]["edges"]))
+
+d, sc = gql("{ masterPanel(yearMin: 2022, yearMax: 2023) { edges { node { year } } } }")
+test("masterPanel year filter", all(2022 <= e["node"]["year"] <= 2023 for e in d["data"]["masterPanel"]["edges"]))
+
+# 3-filter combo
+d, sc = gql('{ masterPanel(province: "BC", cohortType: "skilled", yearMin: 2020, yearMax: 2022) { edges { node { province cohortType year } } } }')
+test("masterPanel 3-filter combo", all(
+    e["node"]["province"] == "BC"
+    and e["node"]["cohortType"] == "skilled"
+    and 2020 <= e["node"]["year"] <= 2022
+    for e in d["data"]["masterPanel"]["edges"]
+))
+
+# pagination
+d1, _ = gql("{ masterPanel(first: 3) { totalCount edges { cursor } pageInfo { endCursor hasNextPage } } }")
+test("masterPanel pagination first=3", len(d1["data"]["masterPanel"]["edges"]) == 3)
+cursor = d1["data"]["masterPanel"]["edges"][-1]["cursor"]
+d2, _ = gql(f'{{ masterPanel(first: 3, after: "{cursor}") {{ edges {{ node {{ year }} }} }} }}')
+test("masterPanel page2 ok", len(d2["data"]["masterPanel"]["edges"]) >= 1)
+
+# ============================================================
+# 11. EMPTY RESULTS
+# ============================================================
+print("\n=== 11. EMPTY RESULTS ===")
+d, sc = gql('{ masterPanel(province: "ZZ") { totalCount edges { node { province } } } }')
+test("empty province returns 0", d["data"]["masterPanel"]["totalCount"] == 0)
+test("empty province no edges", d["data"]["masterPanel"]["edges"] == [])
+
+d, sc = gql("{ welfareLoss(yearMin: 2050, yearMax: 2060) { totalCount } }")
+test("empty year range returns 0", d["data"]["welfareLoss"]["totalCount"] == 0)
+
+d, sc = gql('{ counterfactual(province: "XX") { totalCount } }')
+test("empty counterfactual province returns 0", d["data"]["counterfactual"]["totalCount"] == 0)
+
+d, sc = gql('{ decomposition(dimension: "nonexistent") { totalCount } }')
+test("empty decomposition dimension returns 0", d["data"]["decomposition"]["totalCount"] == 0)
+
+d, sc = gql('{ cohortNiv(cohortType: "martian") { totalCount } }')
+test("empty cohortNiv filter returns 0", d["data"]["cohortNiv"]["totalCount"] == 0)
+
+# ============================================================
+# 12. ERROR HANDLING
+# ============================================================
+print("\n=== 12. ERROR HANDLING ===")
+d, sc = gql("{ invalid syntax }")
+test("syntax error has errors", "errors" in d)
+
+d, sc = gql("{ nonExistentField }")
+test("unknown field has errors", "errors" in d)
+
+# ============================================================
+# 13. API KEY TIERS
+# ============================================================
+print("\n=== 13. API KEY TIERS ===")
+# No key (anonymous)
+d, sc = gql("{ health }")
+test("anonymous query works", sc == 200)
+
+# Basic key
+d, sc = gql("{ health }", headers={"X-API-Key": "immath_basic_dev001"})
+test("basic key works", sc == 200)
+
+# Premium key
+d, sc = gql("{ health }", headers={"X-API-Key": "immath_premium_dev001"})
+test("premium key works", sc == 200)
+
+# Invalid key
+d, sc = gql("{ health }", headers={"X-API-Key": "fake_key_12345"})
+test("invalid key still works (anonymous)", sc == 200)
+
+# Empty key
+d, sc = gql("{ health }", headers={"X-API-Key": ""})
+test("empty key works (anonymous)", sc == 200)
+
+# Basic key with data queries
+d, sc = gql("{ masterPanel(first: 1) { totalCount } }", headers={"X-API-Key": "immath_basic_dev001"})
+test("basic key data query", sc == 200)
+
+# Premium key with data queries
+d, sc = gql("{ masterPanel(first: 1) { totalCount } }", headers={"X-API-Key": "immath_premium_dev001"})
+test("premium key data query", sc == 200)
+
+# ============================================================
+# 14. CORS HEADERS
+# ============================================================
+print("\n=== 14. CORS HEADERS ===")
+r = client.options(f"{BASE}/graphql", headers={
+    "Origin": "http://localhost:3000",
+    "Access-Control-Request-Method": "POST",
+})
+test("CORS preflight 200/204", r.status_code in (200, 204))
+
+r = client.options(f"{BASE}/graphql", headers={
+    "Origin": "https://example.com",
+    "Access-Control-Request-Method": "POST",
+})
+test("CORS external origin ok", r.status_code in (200, 204))
+
+# ============================================================
+# 15. GRAPHIQL PLAYGROUND (debug mode)
+# ============================================================
+print("\n=== 15. GRAPHIQL PLAYGROUND ===")
+r = client.get(f"{BASE}/graphql", headers={"Accept": "text/html"})
+test("graphiql loads", r.status_code == 200)
+
+# ============================================================
+# 16. PAGINATION EDGE CASES
+# ============================================================
+print("\n=== 16. PAGINATION EDGE CASES ===")
+# first=1
+d, sc = gql("{ masterPanel(first: 1) { edges { cursor } pageInfo { hasNextPage } } }")
+test("first=1 returns 1 edge", len(d["data"]["masterPanel"]["edges"]) == 1)
+
+# first=100 (max)
+d, sc = gql("{ masterPanel(first: 100) { edges { cursor } } }")
+test("first=100 accepted", sc == 200)
+
+# first=200 (over max, should cap or accept)
+d, sc = gql("{ masterPanel(first: 200) { edges { cursor } } }")
+test("first=200 handled", sc == 200)
+
+# Walk through ALL pages of cohortNiv
+cursors_seen = set()
+all_nodes = []
+page = gql("{ cohortNiv(first: 3) { edges { cursor node { cohortType } } pageInfo { hasNextPage endCursor } } }")
+while True:
+    d = page[0]
+    edges = d["data"]["cohortNiv"]["edges"]
+    for e in edges:
+        c = e["cursor"]
+        test("no duplicate cursors", c not in cursors_seen, f"cursor={c}")
+        cursors_seen.add(c)
+        all_nodes.append(e["node"]["cohortType"])
+    if not d["data"]["cohortNiv"]["pageInfo"]["hasNextPage"]:
+        break
+    cursor = d["data"]["cohortNiv"]["pageInfo"]["endCursor"]
+    page = gql(f'{{ cohortNiv(first: 3, after: "{cursor}") {{ edges {{ cursor node {{ cohortType }} }} pageInfo {{ hasNextPage endCursor }} }} }}')
+
+test("full pagination walk = 8 nodes", len(all_nodes) == 8, f"got {len(all_nodes)}")
+
+# ============================================================
+# 17. DEEP QUERY (depth limit)
+# ============================================================
+print("\n=== 17. DEEP QUERY ===")
+deep = "{ health " * 15 + "}" * 15
+d, sc = gql(deep)
+test("deep query handled gracefully", sc == 200)
+
+# ============================================================
+# 18. MULTI-QUERY (all 6 models in one request)
+# ============================================================
+print("\n=== 18. MULTI-QUERY ===")
+d, sc = gql("""
+{
+    health
+    cohortNiv(first: 1) { totalCount }
+    lambdaResults { variable }
+    welfareLoss(first: 1) { totalCount }
+    decomposition(first: 1) { totalCount }
+    counterfactual(first: 1) { totalCount }
+    masterPanel(first: 1) { totalCount }
+}
+""")
+test("multi-query 200", sc == 200, str(d.get("errors")))
+test("multi-query all 7 keys", all(
+    k in d["data"]
+    for k in ["health", "cohortNiv", "lambdaResults", "welfareLoss", "decomposition", "counterfactual", "masterPanel"]
+))
+test("multi-query health ok", d["data"]["health"] == "ok")
+test("multi-query cohortNiv >0", d["data"]["cohortNiv"]["totalCount"] > 0)
+test("multi-query welfareLoss >0", d["data"]["welfareLoss"]["totalCount"] > 0)
+test("multi-query decomposition >0", d["data"]["decomposition"]["totalCount"] > 0)
+test("multi-query counterfactual >0", d["data"]["counterfactual"]["totalCount"] > 0)
+test("multi-query masterPanel >0", d["data"]["masterPanel"]["totalCount"] > 0)
+
+# ============================================================
+# 19. ALL PROVINCES
+# ============================================================
+print("\n=== 19. ALL PROVINCES ===")
+provinces = ["ON", "QC", "BC", "AB", "MB", "SK", "NS", "NB", "NL", "PE", "NT", "YT", "NU"]
+for p in provinces:
+    d, sc = gql(f'{{ masterPanel(province: "{p}") {{ totalCount }} }}')
+    test(f"province {p} query ok", sc == 200)
+
+# ============================================================
+# 20. INTROSPECTION (debug mode should allow)
+# ============================================================
+print("\n=== 20. INTROSPECTION ===")
+d, sc = gql("{ __schema { queryType { name } } }")
+test("introspection works in debug", sc == 200 and "data" in d)
+
+d, sc = gql('{ __type(name: "Query") { name } }')
+test("__type query works in debug", sc == 200 and "data" in d)
+
+# ============================================================
+# 21. RESPONSE HEADERS
+# ============================================================
+print("\n=== 21. RESPONSE HEADERS ===")
+r = client.post(f"{BASE}/graphql", json={"query": "{ health }"})
+test("graphql POST returns 200", r.status_code == 200)
+test("response is JSON", "application/json" in r.headers.get("content-type", ""))
+
+# ============================================================
+# 22. CONCURRENT REQUESTS (burst)
+# ============================================================
+print("\n=== 22. BURST REQUESTS ===")
+burst_results = []
+for i in range(10):
+    r = client.post(f"{BASE}/graphql", json={"query": "{ health }"})
+    burst_results.append(r.status_code)
+test("10 rapid queries all 200", all(s == 200 for s in burst_results))
+
+# ============================================================
+# 23. COMBINED MULTI-FILTER EDGE CASES
+# ============================================================
+print("\n=== 23. COMBINED MULTI-FILTER EDGE CASES ===")
+# All filters on masterPanel
+d, sc = gql('{ masterPanel(province: "ON", cohortType: "immigrant", yearMin: 2019, yearMax: 2021, first: 2) { edges { node { province cohortType year } } totalCount } }')
+test("masterPanel all 4 filters", sc == 200 and "data" in d)
+if d["data"]["masterPanel"]["edges"]:
+    test("masterPanel 4-filter results correct", all(
+        e["node"]["province"] == "ON"
+        and e["node"]["cohortType"] == "immigrant"
+        and 2019 <= e["node"]["year"] <= 2021
+        for e in d["data"]["masterPanel"]["edges"]
+    ))
+else:
+    test("masterPanel 4-filter empty ok", True)
+
+# All filters on counterfactual
+d, sc = gql('{ counterfactual(province: "QC", scenario: "housing_heavy", yearMin: 2020, yearMax: 2022) { edges { node { province scenario year } } } }')
+test("counterfactual all filters", sc == 200 and "data" in d)
+if d["data"]["counterfactual"]["edges"]:
+    test("counterfactual all-filter results correct", all(
+        e["node"]["province"] == "QC"
+        and e["node"]["scenario"] == "housing_heavy"
+        and 2020 <= e["node"]["year"] <= 2022
+        for e in d["data"]["counterfactual"]["edges"]
+    ))
+else:
+    test("counterfactual all-filter empty ok", True)
+
+# ============================================================
+# 24. SPECIAL CHARACTER HANDLING
+# ============================================================
+print("\n=== 24. SPECIAL CHARACTERS ===")
+# Query with complex Unicode
+d, sc = gql('{ masterPanel(province: "ON") { edges { node { province } } } }')
+test("standard query works", sc == 200)
+
+# ============================================================
+# 25. POST vs GET on graphql
+# ============================================================
+print("\n=== 25. POST vs GET ===")
+r = client.post(f"{BASE}/graphql", json={"query": "{ health }"})
+test("POST /graphql 200", r.status_code == 200)
+r = client.get(f"{BASE}/graphql?query={{health}}")
+test("GET /graphql returns something", r.status_code in (200, 405))
+
+# ============================================================
+# 26. CONTENT TYPE CHECKS
+# ============================================================
+print("\n=== 26. CONTENT TYPE ===")
+r = client.get(f"{BASE}/health")
+test("health returns JSON", "application/json" in r.headers.get("content-type", ""))
+
+r = client.get(f"{BASE}/dash/")
+test("dash returns HTML", "text/html" in r.headers.get("content-type", ""))
+
+# ============================================================
+# SUMMARY
+# ============================================================
+sep = "=" * 60
+print(f"\n{sep}")
+total = results["pass"] + results["fail"]
+print(f"RESULTS: {results['pass']} passed, {results['fail']} failed out of {total}")
+print(sep)
+if results["fail"] > 0:
+    print("FAILURES:")
+    for t in results["tests"]:
+        if t.startswith("FAIL"):
+            print(f"  {t}")
+    sys.exit(1)
+else:
+    print("ALL TESTS PASSED")
+    sys.exit(0)

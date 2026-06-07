@@ -11,8 +11,20 @@ from pathlib import Path
 logging.basicConfig(level=logging.INFO)
 
 
+def _find_project_root() -> Path:
+    """Find project root by walking up from this file until finding data/."""
+    current = Path(__file__).resolve().parent
+    for _ in range(10):
+        if (current / "data" / "master" / "master_panel.parquet").exists():
+            return current
+        if current.parent == current:
+            break
+        current = current.parent
+    return Path.cwd()
+
+
 def main():
-    base_dir = Path(__file__).resolve().parents[2]
+    base_dir = _find_project_root()
     debug = os.environ.get("DEBUG", "true").lower() == "true"
     port = int(os.environ.get("PORT", 8050))
 

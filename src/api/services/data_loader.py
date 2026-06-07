@@ -13,7 +13,20 @@ import pandas as pd
 
 logger = logging.getLogger(__name__)
 
-_DEFAULT_BASE = Path(__file__).resolve().parents[3]
+# Walk up from this file to find the project root (directory containing data/)
+def _find_project_root() -> Path:
+    """Find project root by walking up from this file until finding data/."""
+    current = Path(__file__).resolve().parent
+    for _ in range(10):
+        if (current / "data" / "master" / "master_panel.parquet").exists():
+            return current
+        if current.parent == current:
+            break
+        current = current.parent
+    # Fallback: use cwd
+    return Path.cwd()
+
+_DEFAULT_BASE = _find_project_root()
 
 
 def _resolve_base(base_dir: Path | None) -> Path:
